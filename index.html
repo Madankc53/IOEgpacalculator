@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IOE Entrance Score Calculator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -129,6 +131,20 @@
         const negativeMarksEl = document.getElementById('negativeMarks');
         const errorMessageEl = document.getElementById('errorMessage');
 
+        // Cache input elements for performance
+        const inputs = {
+            mathCorrect: document.getElementById('mathCorrect'),
+            phyCorrect: document.getElementById('phyCorrect'),
+            chemCorrect: document.getElementById('chemCorrect'),
+            engCorrect: document.getElementById('engCorrect'),
+            aptCorrect: document.getElementById('aptCorrect'),
+            mathIncorrect: document.getElementById('mathIncorrect'),
+            phyIncorrect: document.getElementById('phyIncorrect'),
+            chemIncorrect: document.getElementById('chemIncorrect'),
+            engIncorrect: document.getElementById('engIncorrect'),
+            aptIncorrect: document.getElementById('aptIncorrect')
+        };
+
         // --- Event Listener for Form Submission ---
         scoreForm.addEventListener('submit', function(e) {
             e.preventDefault(); // Prevent default form submission
@@ -138,8 +154,8 @@
             errorDiv.classList.add('hidden');
 
             // --- Get Input Values ---
-            // We use a helper function to get numeric values from the form.
-            const getVal = (id) => parseInt(document.getElementById(id).value) || 0;
+            // Using valueAsNumber for faster numeric access and avoiding repeated DOM lookups
+            const getVal = (id) => inputs[id].valueAsNumber || 0;
 
             const correct = {
                 math: getVal('mathCorrect'),
@@ -177,13 +193,14 @@
             // Incorrect answers have a 10% penalty.
             
             const positiveMarks = (correct.math * 2) + correct.phy + correct.chem + correct.eng + (correct.apt * 2);
+            // Factor out 0.1 multiplier to reduce number of multiplications
             const negativeMarks = (
-                (incorrect.math * 2 * 0.10) +
-                (incorrect.phy * 1 * 0.10) +
-                (incorrect.chem * 1 * 0.10) +
-                (incorrect.eng * 1 * 0.10) +
-                (incorrect.apt * 2 * 0.10)
-            );
+                (incorrect.math * 2) +
+                incorrect.phy +
+                incorrect.chem +
+                incorrect.eng +
+                (incorrect.apt * 2)
+            ) * 0.1;
 
             const totalScore = positiveMarks - negativeMarks;
 
