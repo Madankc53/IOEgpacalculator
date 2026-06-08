@@ -1,0 +1,3 @@
+## 2025-06-08 - DOM Access and Data Handling Optimization
+**Learning:** Caching DOM element references outside of frequently-triggered event handlers (like form submissions) reduces overhead from repeated `document.getElementById` lookups. Additionally, utilizing `HTMLInputElement.valueAsNumber` provides direct numeric access to input values, avoiding the need for manual parsing and providing a cleaner, more efficient way to handle numeric form data in Vanilla JS.
+**Action:** Always look for opportunities to move DOM lookups outside of event loops and prefer `valueAsNumber` for numeric inputs in future optimizations.
