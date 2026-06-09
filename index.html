@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IOE Entrance Score Calculator</title>
+    <!-- Resource Hints for faster asset loading -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -129,6 +133,20 @@
         const negativeMarksEl = document.getElementById('negativeMarks');
         const errorMessageEl = document.getElementById('errorMessage');
 
+        // Cache numeric input elements outside event listeners for performance
+        const inputs = {
+            mathCorrect: document.getElementById('mathCorrect'),
+            phyCorrect: document.getElementById('phyCorrect'),
+            chemCorrect: document.getElementById('chemCorrect'),
+            engCorrect: document.getElementById('engCorrect'),
+            aptCorrect: document.getElementById('aptCorrect'),
+            mathIncorrect: document.getElementById('mathIncorrect'),
+            phyIncorrect: document.getElementById('phyIncorrect'),
+            chemIncorrect: document.getElementById('chemIncorrect'),
+            engIncorrect: document.getElementById('engIncorrect'),
+            aptIncorrect: document.getElementById('aptIncorrect')
+        };
+
         // --- Event Listener for Form Submission ---
         scoreForm.addEventListener('submit', function(e) {
             e.preventDefault(); // Prevent default form submission
@@ -138,8 +156,8 @@
             errorDiv.classList.add('hidden');
 
             // --- Get Input Values ---
-            // We use a helper function to get numeric values from the form.
-            const getVal = (id) => parseInt(document.getElementById(id).value) || 0;
+            // Use valueAsNumber for efficiency and cached DOM elements
+            const getVal = (key) => inputs[key].valueAsNumber || 0;
 
             const correct = {
                 math: getVal('mathCorrect'),

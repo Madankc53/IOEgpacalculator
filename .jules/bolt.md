@@ -1,0 +1,3 @@
+## 2026-06-09 - Optimizing Vanilla JS Interaction Performance
+**Learning:** In a single-file Vanilla JavaScript application, performing repeated DOM lookups (`getElementById`) and string parsing (`parseInt`) inside event listeners is an inefficient pattern. Additionally, reliance on multiple external CDNs without resource hints can delay the First Contentful Paint.
+**Action:** Always cache DOM element references outside of high-frequency event handlers. Utilize `HTMLInputElement.valueAsNumber` for more efficient and type-safe numeric input access. Implement `preconnect` resource hints for critical external assets like Tailwind CSS and Google Fonts.
