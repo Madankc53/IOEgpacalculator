@@ -1,0 +1,3 @@
+## 2026-06-10 - Optimizing DOM Access and Resource Loading
+**Learning:** In a single-file application, caching DOM references outside of high-frequency event handlers like form submissions and using native properties like `valueAsNumber` significantly reduces the overhead of DOM manipulation and parsing. Additionally, `preconnect` hints are highly effective for static sites relying on CDNs (Tailwind, Google Fonts) to minimize time-to-first-paint.
+**Action:** Always check if DOM elements can be cached globally if they don't change, and prefer `valueAsNumber` for numeric inputs to avoid unnecessary `parseInt` calls.
