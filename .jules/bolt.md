@@ -1,0 +1,3 @@
+## 2026-06-13 - Optimizing Static Single-File Application
+**Learning:** For single-file static HTML applications using external CDNs and fonts, `preconnect` resource hints significantly improve initial load time by reducing connection overhead. Additionally, caching DOM element references and using `valueAsNumber` for numeric inputs are effective micro-optimizations that eliminate redundant DOM traversal and string parsing during frequent interactions.
+**Action:** Always check for external resource dependencies and add appropriate resource hints. Cache DOM selections outside of hot paths (like event listeners) and prefer native type-safe properties like `valueAsNumber` over manual parsing.
