@@ -1,0 +1,3 @@
+## 2026-06-16 - DOM Access and Resource Optimization
+**Learning:** In a single-file static application using external CDNs (Tailwind, Google Fonts), adding `preconnect` resource hints can significantly reduce the time to first paint. Additionally, caching DOM element references outside of high-frequency event handlers (like form submission) and using `valueAsNumber` for numeric inputs improves performance by reducing redundant lookups and string parsing.
+**Action:** Always check for opportunities to cache DOM references and use specific element properties like `valueAsNumber` for better efficiency. Add resource hints for third-party assets to improve load times.
