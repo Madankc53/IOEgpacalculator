@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IOE Entrance Score Calculator</title>
+    <!-- Preconnect to external origins to speed up resource loading -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -118,6 +122,7 @@
 
     <script>
         // --- DOM Element Selection ---
+        // Cache DOM elements outside the event listener to avoid repeated lookups
         const scoreForm = document.getElementById('scoreForm');
         const resetBtn = document.getElementById('resetBtn');
         const resultDiv = document.getElementById('result');
@@ -129,6 +134,20 @@
         const negativeMarksEl = document.getElementById('negativeMarks');
         const errorMessageEl = document.getElementById('errorMessage');
 
+        // Cache all input elements for performance
+        const inputs = {
+            mathCorrect: document.getElementById('mathCorrect'),
+            phyCorrect: document.getElementById('phyCorrect'),
+            chemCorrect: document.getElementById('chemCorrect'),
+            engCorrect: document.getElementById('engCorrect'),
+            aptCorrect: document.getElementById('aptCorrect'),
+            mathIncorrect: document.getElementById('mathIncorrect'),
+            phyIncorrect: document.getElementById('phyIncorrect'),
+            chemIncorrect: document.getElementById('chemIncorrect'),
+            engIncorrect: document.getElementById('engIncorrect'),
+            aptIncorrect: document.getElementById('aptIncorrect')
+        };
+
         // --- Event Listener for Form Submission ---
         scoreForm.addEventListener('submit', function(e) {
             e.preventDefault(); // Prevent default form submission
@@ -138,32 +157,26 @@
             errorDiv.classList.add('hidden');
 
             // --- Get Input Values ---
-            // We use a helper function to get numeric values from the form.
-            const getVal = (id) => parseInt(document.getElementById(id).value) || 0;
+            // Use valueAsNumber for better performance than parseInt(value)
+            const mc = inputs.mathCorrect.valueAsNumber || 0;
+            const pc = inputs.phyCorrect.valueAsNumber || 0;
+            const cc = inputs.chemCorrect.valueAsNumber || 0;
+            const ec = inputs.engCorrect.valueAsNumber || 0;
+            const ac = inputs.aptCorrect.valueAsNumber || 0;
 
-            const correct = {
-                math: getVal('mathCorrect'),
-                phy: getVal('phyCorrect'),
-                chem: getVal('chemCorrect'),
-                eng: getVal('engCorrect'),
-                apt: getVal('aptCorrect')
-            };
-
-            const incorrect = {
-                math: getVal('mathIncorrect'),
-                phy: getVal('phyIncorrect'),
-                chem: getVal('chemIncorrect'),
-                eng: getVal('engIncorrect'),
-                apt: getVal('aptIncorrect')
-            };
+            const mi = inputs.mathIncorrect.valueAsNumber || 0;
+            const pi = inputs.phyIncorrect.valueAsNumber || 0;
+            const ci = inputs.chemIncorrect.valueAsNumber || 0;
+            const ei = inputs.engIncorrect.valueAsNumber || 0;
+            const ai = inputs.aptIncorrect.valueAsNumber || 0;
             
             // --- Validation ---
             // Check if the number of correct and incorrect answers exceeds the total questions for each subject.
-            if (correct.math + incorrect.math > 50 || 
-                correct.phy + incorrect.phy > 45 ||
-                correct.chem + incorrect.chem > 25 ||
-                correct.eng + incorrect.eng > 22 ||
-                correct.apt + incorrect.apt > 18) {
+            if (mc + mi > 50 ||
+                pc + pi > 45 ||
+                cc + ci > 25 ||
+                ec + ei > 22 ||
+                ac + ai > 18) {
                 
                 errorMessageEl.textContent = 'Error: The sum of correct and incorrect answers cannot exceed the total questions for a subject.';
                 errorDiv.classList.remove('hidden');
@@ -176,20 +189,21 @@
             // Correct answers in Physics, Chemistry, and English are worth 1 mark.
             // Incorrect answers have a 10% penalty.
             
-            const positiveMarks = (correct.math * 2) + correct.phy + correct.chem + correct.eng + (correct.apt * 2);
+            const positiveMarks = (mc * 2) + pc + cc + ec + (ac * 2);
             const negativeMarks = (
-                (incorrect.math * 2 * 0.10) +
-                (incorrect.phy * 1 * 0.10) +
-                (incorrect.chem * 1 * 0.10) +
-                (incorrect.eng * 1 * 0.10) +
-                (incorrect.apt * 2 * 0.10)
+                (mi * 0.20) +
+                (pi * 0.10) +
+                (ci * 0.10) +
+                (ei * 0.10) +
+                (ai * 0.20)
             );
 
             const totalScore = positiveMarks - negativeMarks;
 
             // --- Display Results ---
-            const totalCorrect = Object.values(correct).reduce((a, b) => a + b, 0);
-            const totalIncorrect = Object.values(incorrect).reduce((a, b) => a + b, 0);
+            // Avoid Object.values().reduce() overhead by using direct addition
+            const totalCorrect = mc + pc + cc + ec + ac;
+            const totalIncorrect = mi + pi + ci + ei + ai;
 
             finalScoreEl.textContent = totalScore.toFixed(2);
             totalCorrectEl.textContent = totalCorrect;
