@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IOE Entrance Score Calculator</title>
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -129,6 +132,20 @@
         const negativeMarksEl = document.getElementById('negativeMarks');
         const errorMessageEl = document.getElementById('errorMessage');
 
+        // Optimization: Cache input elements to avoid redundant DOM lookups during calculation
+        const inputs = {
+            mathCorrect: document.getElementById('mathCorrect'),
+            phyCorrect: document.getElementById('phyCorrect'),
+            chemCorrect: document.getElementById('chemCorrect'),
+            engCorrect: document.getElementById('engCorrect'),
+            aptCorrect: document.getElementById('aptCorrect'),
+            mathIncorrect: document.getElementById('mathIncorrect'),
+            phyIncorrect: document.getElementById('phyIncorrect'),
+            chemIncorrect: document.getElementById('chemIncorrect'),
+            engIncorrect: document.getElementById('engIncorrect'),
+            aptIncorrect: document.getElementById('aptIncorrect')
+        };
+
         // --- Event Listener for Form Submission ---
         scoreForm.addEventListener('submit', function(e) {
             e.preventDefault(); // Prevent default form submission
@@ -138,23 +155,21 @@
             errorDiv.classList.add('hidden');
 
             // --- Get Input Values ---
-            // We use a helper function to get numeric values from the form.
-            const getVal = (id) => parseInt(document.getElementById(id).value) || 0;
-
+            // Optimization: Use valueAsNumber for faster numeric retrieval
             const correct = {
-                math: getVal('mathCorrect'),
-                phy: getVal('phyCorrect'),
-                chem: getVal('chemCorrect'),
-                eng: getVal('engCorrect'),
-                apt: getVal('aptCorrect')
+                math: inputs.mathCorrect.valueAsNumber || 0,
+                phy: inputs.phyCorrect.valueAsNumber || 0,
+                chem: inputs.chemCorrect.valueAsNumber || 0,
+                eng: inputs.engCorrect.valueAsNumber || 0,
+                apt: inputs.aptCorrect.valueAsNumber || 0
             };
 
             const incorrect = {
-                math: getVal('mathIncorrect'),
-                phy: getVal('phyIncorrect'),
-                chem: getVal('chemIncorrect'),
-                eng: getVal('engIncorrect'),
-                apt: getVal('aptIncorrect')
+                math: inputs.mathIncorrect.valueAsNumber || 0,
+                phy: inputs.phyIncorrect.valueAsNumber || 0,
+                chem: inputs.chemIncorrect.valueAsNumber || 0,
+                eng: inputs.engIncorrect.valueAsNumber || 0,
+                apt: inputs.aptIncorrect.valueAsNumber || 0
             };
             
             // --- Validation ---
@@ -178,18 +193,19 @@
             
             const positiveMarks = (correct.math * 2) + correct.phy + correct.chem + correct.eng + (correct.apt * 2);
             const negativeMarks = (
-                (incorrect.math * 2 * 0.10) +
-                (incorrect.phy * 1 * 0.10) +
-                (incorrect.chem * 1 * 0.10) +
-                (incorrect.eng * 1 * 0.10) +
-                (incorrect.apt * 2 * 0.10)
+                (incorrect.math * 0.20) +
+                (incorrect.phy * 0.10) +
+                (incorrect.chem * 0.10) +
+                (incorrect.eng * 0.10) +
+                (incorrect.apt * 0.20)
             );
 
             const totalScore = positiveMarks - negativeMarks;
 
             // --- Display Results ---
-            const totalCorrect = Object.values(correct).reduce((a, b) => a + b, 0);
-            const totalIncorrect = Object.values(incorrect).reduce((a, b) => a + b, 0);
+            // Optimization: Direct summation is faster than Object.values().reduce()
+            const totalCorrect = correct.math + correct.phy + correct.chem + correct.eng + correct.apt;
+            const totalIncorrect = incorrect.math + incorrect.phy + incorrect.chem + incorrect.eng + incorrect.apt;
 
             finalScoreEl.textContent = totalScore.toFixed(2);
             totalCorrectEl.textContent = totalCorrect;
