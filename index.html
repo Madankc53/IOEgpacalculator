@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>IOE Entrance Score Calculator</title>
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -129,6 +132,20 @@
         const negativeMarksEl = document.getElementById('negativeMarks');
         const errorMessageEl = document.getElementById('errorMessage');
 
+        // --- Subject Input Caching ---
+        const inputs = {
+            mathCorrect: document.getElementById('mathCorrect'),
+            phyCorrect: document.getElementById('phyCorrect'),
+            chemCorrect: document.getElementById('chemCorrect'),
+            engCorrect: document.getElementById('engCorrect'),
+            aptCorrect: document.getElementById('aptCorrect'),
+            mathIncorrect: document.getElementById('mathIncorrect'),
+            phyIncorrect: document.getElementById('phyIncorrect'),
+            chemIncorrect: document.getElementById('chemIncorrect'),
+            engIncorrect: document.getElementById('engIncorrect'),
+            aptIncorrect: document.getElementById('aptIncorrect')
+        };
+
         // --- Event Listener for Form Submission ---
         scoreForm.addEventListener('submit', function(e) {
             e.preventDefault(); // Prevent default form submission
@@ -138,32 +155,26 @@
             errorDiv.classList.add('hidden');
 
             // --- Get Input Values ---
-            // We use a helper function to get numeric values from the form.
-            const getVal = (id) => parseInt(document.getElementById(id).value) || 0;
+            // Use valueAsNumber for faster numeric retrieval and fall back to 0 if NaN.
+            const correctMath = inputs.mathCorrect.valueAsNumber || 0;
+            const correctPhy = inputs.phyCorrect.valueAsNumber || 0;
+            const correctChem = inputs.chemCorrect.valueAsNumber || 0;
+            const correctEng = inputs.engCorrect.valueAsNumber || 0;
+            const correctApt = inputs.aptCorrect.valueAsNumber || 0;
 
-            const correct = {
-                math: getVal('mathCorrect'),
-                phy: getVal('phyCorrect'),
-                chem: getVal('chemCorrect'),
-                eng: getVal('engCorrect'),
-                apt: getVal('aptCorrect')
-            };
-
-            const incorrect = {
-                math: getVal('mathIncorrect'),
-                phy: getVal('phyIncorrect'),
-                chem: getVal('chemIncorrect'),
-                eng: getVal('engIncorrect'),
-                apt: getVal('aptIncorrect')
-            };
+            const incorrectMath = inputs.mathIncorrect.valueAsNumber || 0;
+            const incorrectPhy = inputs.phyIncorrect.valueAsNumber || 0;
+            const incorrectChem = inputs.chemIncorrect.valueAsNumber || 0;
+            const incorrectEng = inputs.engIncorrect.valueAsNumber || 0;
+            const incorrectApt = inputs.aptIncorrect.valueAsNumber || 0;
             
             // --- Validation ---
             // Check if the number of correct and incorrect answers exceeds the total questions for each subject.
-            if (correct.math + incorrect.math > 50 || 
-                correct.phy + incorrect.phy > 45 ||
-                correct.chem + incorrect.chem > 25 ||
-                correct.eng + incorrect.eng > 22 ||
-                correct.apt + incorrect.apt > 18) {
+            if (correctMath + incorrectMath > 50 ||
+                correctPhy + incorrectPhy > 45 ||
+                correctChem + incorrectChem > 25 ||
+                correctEng + incorrectEng > 22 ||
+                correctApt + incorrectApt > 18) {
                 
                 errorMessageEl.textContent = 'Error: The sum of correct and incorrect answers cannot exceed the total questions for a subject.';
                 errorDiv.classList.remove('hidden');
@@ -171,25 +182,24 @@
             }
 
             // --- Calculation Logic ---
-            // The IOE entrance exam has a specific marking scheme.
-            // Correct answers in Math and Aptitude are worth 2 marks.
-            // Correct answers in Physics, Chemistry, and English are worth 1 mark.
-            // Incorrect answers have a 10% penalty.
+            // Marking scheme: Math/Aptitude = 2 marks, Physics/Chemistry/English = 1 mark.
+            // Penalty: 10% for incorrect answers.
             
-            const positiveMarks = (correct.math * 2) + correct.phy + correct.chem + correct.eng + (correct.apt * 2);
+            const positiveMarks = (correctMath * 2) + correctPhy + correctChem + correctEng + (correctApt * 2);
             const negativeMarks = (
-                (incorrect.math * 2 * 0.10) +
-                (incorrect.phy * 1 * 0.10) +
-                (incorrect.chem * 1 * 0.10) +
-                (incorrect.eng * 1 * 0.10) +
-                (incorrect.apt * 2 * 0.10)
+                (incorrectMath * 0.20) + // (incorrect * 2 * 0.10)
+                (incorrectPhy * 0.10) +
+                (incorrectChem * 0.10) +
+                (incorrectEng * 0.10) +
+                (incorrectApt * 0.20)    // (incorrect * 2 * 0.10)
             );
 
             const totalScore = positiveMarks - negativeMarks;
 
             // --- Display Results ---
-            const totalCorrect = Object.values(correct).reduce((a, b) => a + b, 0);
-            const totalIncorrect = Object.values(incorrect).reduce((a, b) => a + b, 0);
+            // Direct summation is faster than Object.values().reduce()
+            const totalCorrect = correctMath + correctPhy + correctChem + correctEng + correctApt;
+            const totalIncorrect = incorrectMath + incorrectPhy + incorrectChem + incorrectEng + incorrectApt;
 
             finalScoreEl.textContent = totalScore.toFixed(2);
             totalCorrectEl.textContent = totalCorrect;
